@@ -8,11 +8,10 @@ export default function HomeScreen({ token, utente }) {
   const handleTimbratura = async (tipo_evento) => {
     try {
       // NFC
-      await NfcManager.start();
-      await NfcManager.requestTechnology(NfcTech.Ndef);
-      const tag = await NfcManager.getTag();
-      const luogo_id = tag.id; // oppure leggi il payload NDEF
-      await NfcManager.cancelTechnologyRequest();
+      // const tag = await NfcManager.getTag();
+      // const luogo_id = tag.id; // oppure leggi il payload NDEF
+      const luogo_id = '04:42:DE:1A:7F:61:80'; // UID fisso per test
+      // await NfcManager.cancelTechnologyRequest();
 
       // GPS
       let { status } = await Location.requestForegroundPermissionsAsync();
