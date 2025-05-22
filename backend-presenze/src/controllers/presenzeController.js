@@ -51,13 +51,19 @@ exports.presenzeCSV = async (req, res) => {
 exports.registraTimbratura = async (data, res) => {
   try {
     const { utente_id, luogo_id, timestamp, lat, lng, tipo_evento } = data;
+    console.log('Dati ricevuti per timbratura:', data); // LOG DEBUG
+    // Validazione base
+    if (!utente_id || !luogo_id || !timestamp || !lat || !lng || !tipo_evento) {
+      console.error('Dati mancanti:', data);
+      return res.status(400).json({ error: 'Dati mancanti' });
+    }
     await pool.query(
       'INSERT INTO presenze (utente_id, luogo_id, tipo_evento, timestamp, lat, lng) VALUES (?, ?, ?, ?, ?, ?)',
       [utente_id, luogo_id, tipo_evento, timestamp, lat, lng]
     );
     res.json({ message: 'Timbratura registrata!' });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Errore interno' });
+    console.error('Errore durante la timbratura:', err);
+    res.status(500).json({ error: 'Errore interno', dettagli: err.message });
   }
 };

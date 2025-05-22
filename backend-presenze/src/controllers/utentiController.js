@@ -7,12 +7,6 @@ exports.login = async (req, res) => {
   console.log('Login endpoint chiamato', req.body);
   const { email, password } = req.body;
 
-  // Utente root di default (non presente nel DB)
-  if (email === 'root' && password === 'Romamerda1927!') {
-    const token = jwt.sign({ id: 0, nome: 'root', ruolo: 'root' }, process.env.JWT_SECRET, { expiresIn: '12h' });
-    return res.json({ token, utente: { nome: 'root', ruolo: 'root' } });
-  }
-
   const [rows] = await pool.query('SELECT * FROM utenti WHERE email = ?', [email]);
   if (!rows.length) {
     console.log('Email non trovata:', email);
@@ -25,9 +19,10 @@ exports.login = async (req, res) => {
     return res.status(401).json({ error: "Credenziali errate" });
   }
 
-  // Ruolo: "admin" o "dipendente"
+  // Ruolo: "admin" o "dipendente" o "root"
   const token = jwt.sign({ id: utente.id, nome: utente.nome, ruolo: utente.ruolo }, process.env.JWT_SECRET, { expiresIn: '12h' });
-  res.json({ token, utente: { nome: utente.nome, ruolo: utente.ruolo } });
+  // Rispondi sempre con id, nome, ruolo
+  res.json({ token, utente: { id: utente.id, nome: utente.nome, ruolo: utente.ruolo } });
 };
 
 exports.register = async (req, res) => {
