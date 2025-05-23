@@ -9,6 +9,7 @@ export default function LoginScreen({ setToken, setUtente }) {
 
   const handleLogin = async () => {
     setError('');
+    console.log('Tentativo login con:', { email, password }); // LOG AGGIUNTO
     try {
       const res = await axios.post('http://192.168.1.108:3001/api/utenti/login', { email, password });
       console.log('Risposta login:', res.data);
@@ -16,7 +17,12 @@ export default function LoginScreen({ setToken, setUtente }) {
       setUtente(res.data.utente);
     } catch (err) {
       setError('Credenziali errate');
-      console.log('Errore login:', err?.response?.data || err.message);
+      // Log dettagliato errore
+      if (err.response) {
+        console.log('Errore login response:', err.response.status, err.response.data);
+      } else {
+        console.log('Errore login:', err.message);
+      }
     }
   };
 
