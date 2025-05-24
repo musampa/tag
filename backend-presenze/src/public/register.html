@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrazione Utente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: sans-serif; background: #f6fafd; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    .container { background: #fff; padding: 32px 24px; border-radius: 12px; box-shadow: 0 2px 12px #0a7ea420; max-width: 350px; width: 100%; }
+    h2 { color: #0a7ea4; text-align: center; margin-bottom: 24px; }
+    input, select { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #d0e2ed; border-radius: 6px; font-size: 16px; }
+    button { width: 100%; background: #0a7ea4; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 14px; font-size: 18px; cursor: pointer; }
+    .success { color: #43a047; text-align: center; margin-top: 12px; }
+    .error { color: #e53935; text-align: center; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Registrazione</h2>
+    <form id="registerForm">
+      <input type="text" id="nome" placeholder="Nome" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <select id="ruolo" title="Ruolo">
+        <option value="admin">Admin</option>
+        <option value="dashboard">Dashboard</option>
+      </select>
+      <button type="submit">Registrati</button>
+    </form>
+    <div id="msg"></div>
+  </div>
+  <script>
+    document.getElementById('registerForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const nome = document.getElementById('nome').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const ruolo = document.getElementById('ruolo').value;
+      const msg = document.getElementById('msg');
+      msg.textContent = '';
+      msg.className = '';
+      try {
+        const res = await fetch('/api/utenti/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome, email, password, ruolo })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          msg.textContent = 'Registrazione avvenuta con successo!';
+          msg.className = 'success';
+        } else {
+          msg.textContent = data.error || 'Errore nella registrazione';
+          msg.className = 'error';
+        }
+      } catch (err) {
+        msg.textContent = 'Errore di rete';
+        msg.className = 'error';
+      }
+    };
+  </script>
+</body>
+</html>

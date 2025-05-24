@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image, Linking } from 'react-native';
 import axios from 'axios';
 
 export default function LoginScreen({ setToken, setUtente }) {
@@ -9,14 +9,29 @@ export default function LoginScreen({ setToken, setUtente }) {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    console.log('=== LOGIN BUTTON PREMUTO ==='); // LOG DEBUG INIZIO
     setError('');
     setLoading(true);
+    console.log('Tentativo login con:', { email, password }); // LOG DEBUG
     try {
-      const res = await axios.post('http://192.168.1.108:3001/api/utenti/login', { email, password });
-      setToken(res.data.token);
-      setUtente(res.data.utente);
+      const res = await fetch('http://192.168.1.108:3001/api/utenti/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        setError('Credenziali errate');
+        console.log('Errore login response:', res.status, errData); // LOG DEBUG
+        return;
+      }
+      const data = await res.json();
+      console.log('Risposta login:', data); // LOG DEBUG
+      setToken(data.token);
+      setUtente(data.utente);
     } catch (err) {
-      setError('Credenziali errate');
+      setError('Errore di rete');
+      console.log('Errore login:', err.message); // LOG DEBUG
     } finally {
       setLoading(false);
     }
@@ -45,6 +60,9 @@ export default function LoginScreen({ setToken, setUtente }) {
       />
       <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
         <Text style={styles.buttonText}>{loading ? 'Attendi...' : 'Login'}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.registerButton} onPress={() => Linking.openURL('http://192.168.1.108:3001/register')}>
+        <Text style={styles.registerText}>Registrati</Text>
       </TouchableOpacity>
       {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
@@ -101,6 +119,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 18,
+  },
+  registerButton: {
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  registerText: {
+    color: '#0a7ea4',
+    fontWeight: 'bold',
+    fontSize: 16,
+    textDecorationLine: 'underline',
   },
   error: {
     color: '#e53935',

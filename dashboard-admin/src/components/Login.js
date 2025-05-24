@@ -14,6 +14,8 @@ export default function Login({ onLogin }) {
       const res = await axios.post("http://localhost:3001/api/utenti/login", {
         email,
         password,
+      }, {
+        headers: { 'x-dashboard-login': 'true' }
       });
       onLogin(res.data.token);
     } catch (err) {

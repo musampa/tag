@@ -20,7 +20,8 @@
       "permissions": [
         "android.permission.NFC"
       ],
-      "package": "com.musampazzo.mobilenfcpresenzev2"
+      "package": "com.musampazzo.mobilenfcpresenzev2",
+      "usesCleartextTraffic": true
     },
     "web": {
       "bundler": "metro",
@@ -28,7 +29,6 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
       [
         "expo-splash-screen",
         {
